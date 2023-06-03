@@ -10,6 +10,7 @@ import UIKit
 class ViewController: UIViewController {
     
     var pokemonList: [PokemonDetailsData] = []
+    var pokemon: [Pokemon] = []
     var cellIdentifier = "PokemonCell"
     var pokemon2: [PokemonDetailsData] = []
     
@@ -65,10 +66,19 @@ class ViewController: UIViewController {
         setContranstsTableView()
         listPokemon.register(UITableViewCell.self, forCellReuseIdentifier: "PokemonCell")
         
-        PokemonRequest().fetchPokemonDetailsData { pokemonList in
-            self.pokemonList = pokemonList
+//        PokemonRequest().getPokemonDetails { pokemonList in
+//            self.pokemonList = pokemonList
+//            DispatchQueue.main.async {
+//                self.listPokemon.reloadData()
+//                print(pokemonList)
+//            }
+//        }
+        
+        PokemonRequest().getPokemonDetails { pokemon in
+            self.pokemon = pokemon
             DispatchQueue.main.async {
                 self.listPokemon.reloadData()
+                print(pokemon)
             }
         }
     }
@@ -114,12 +124,12 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return pokemonList.count
+        return pokemon.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
-        cell.textLabel?.text? = pokemonList[indexPath.row].name
+        cell.textLabel?.text? = "picachu"
         return cell
     }
 }

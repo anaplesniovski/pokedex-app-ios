@@ -11,14 +11,14 @@ struct PokemonDetailsData: Decodable {
     let name: String
     let height: Int
     let weight: Int
-    let images: ImagesData
+    let image: ImageData
     let types: [TypeData]
     
     enum CodingKeys: String, CodingKey {
         case name
         case height
         case weight
-        case images = "sprites"
+        case image = "sprites"
         case types
     }
     
@@ -27,52 +27,52 @@ struct PokemonDetailsData: Decodable {
         self.name = try container.decode(String.self, forKey: .name)
         self.height = try container.decode(Int.self, forKey: .height)
         self.weight = try container.decode(Int.self, forKey: .weight)
-        self.images = try container.decode(ImagesData.self, forKey: .images)
+        self.image = try container.decode(ImageData.self, forKey: .image)
         self.types = try container.decode([TypeData].self, forKey: .types)
     }
 }
 
-struct ImagesData: Decodable {
-    let imageUrl: urlImageData
+struct ImageData: Decodable {
+    let imagePositions: ImagePositionsData
     
     enum CodingKeys: String, CodingKey {
-        case imageUrl = "other"
+        case imagePositions = "other"
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.imageUrl = try container.decode(urlImageData.self, forKey: .imageUrl)
+        self.imagePositions = try container.decode(ImagePositionsData.self, forKey: .imagePositions)
     }
 }
 
-struct urlImageData: Decodable {
-    let urlImageData: FrontDefault
+struct ImagePositionsData: Decodable {
+    let frontDefault: FrontDefaultData
     
     enum CodingKeys: String, CodingKey {
-        case urlImageData = "dream_world"
+        case frontDefault = "dream_world"
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.urlImageData = try container.decode(FrontDefault.self, forKey: .urlImageData)
+        self.frontDefault = try container.decode(FrontDefaultData.self, forKey: .frontDefault)
     }
 }
 
-struct FrontDefault: Decodable {
-    let frontdefault: String
+struct FrontDefaultData: Decodable {
+    let imageURLFront: String
     
     enum CodingKeys: String, CodingKey {
-        case frontdefault = "front_default"
+        case imageURLFront = "front_default"
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.frontdefault = try container.decode(String.self, forKey: .frontdefault)
+        self.imageURLFront = try container.decode(String.self, forKey: .imageURLFront)
     }
 }
 
 struct TypeData: Decodable {
-    let type: TypeName
+    let type: TypeNameData
     
     enum CodingKeys: CodingKey {
         case type
@@ -80,11 +80,11 @@ struct TypeData: Decodable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.type = try container.decode(TypeName.self, forKey: .type)
+        self.type = try container.decode(TypeNameData.self, forKey: .type)
     }
 }
 
-struct TypeName: Decodable {
+struct TypeNameData: Decodable {
     let name: String
     
     enum CodingKeys: CodingKey {

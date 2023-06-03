@@ -36,25 +36,62 @@ class PokemonRequest {
         }
         task.resume()
     }
-    
-    func fetchPokemonDetailsData(completion: @escaping ([PokemonDetailsData]) -> ()) {
-        var pokemonDetailsData: [PokemonDetailsData] = []
-            var count = 0
+
+    func fetchPokemonDetail(pokemon: PokemonListData, completion: @escaping (Pokemon) -> ()) {
+        guard let pokemonURL = URL(string: pokemon.url) else { return }
+        let task = URLSession.shared.dataTask(with: pokemonURL) { (data, response, error) in
+            guard let responseData = data else { return }
+            do {
+                let pokemonDetail = try JSONDecoder().decode(PokemonDetailsData.self, from: responseData)
+                let image = pokemonDetail.image.imagePositions.frontDefault.imageURLFront
+                let types = pokemonDetail.types.map { $0.type.name }
+                let pokemon = Pokemon(name: pokemonDetail.name, types: types, height: pokemonDetail.height, weight: pokemonDetail.weight, image: image)
+                completion(pokemon)
+            } catch {
+                print("error: \(error)")
+            }
+        }
+        task.resume()
+    }
+
+    func getPokemonDetails(completion: @escaping ([PokemonDetailsData]) -> ()) {
+        var pokemonDetails: [PokemonDetailsData] = []
+        var count = 0
         let dispatchGroup = DispatchGroup()
-        
+
         fetchPokemonList { pokemonList in
             for pokemon in pokemonList {
                 dispatchGroup.enter()
                 self.fetchPokemonDetail(pokemon: pokemon) { pokemonDetail in
                     let pokemonDetail = pokemonDetail
-                    pokemonDetailsData.append(pokemonDetail)
+                    pokemonDetails.append(pokemonDetail)
                     count += 1
                     dispatchGroup.leave()
                 }
             }
-            
+
             dispatchGroup.notify(queue: .main) {
-                completion(pokemonDetailsData)
+                completion(pokemonDetails)
+            }
+        }
+    }
+    
+    func getPokemonDetails(completion: @escaping ([Pokemon]) -> ()) {
+        var pokemonDetails: [Pokemon] = []
+        let dispatchGroup = DispatchGroup()
+
+        fetchPokemonList { pokemonList in
+            for pokemon in pokemonList {
+                dispatchGroup.enter()
+                self.fetchPokemonDetail(pokemon: pokemon) { pokemonDetail in
+                    let pokemonDetail = pokemonDetail
+                    pokemonDetails.append(pokemonDetail)
+                    dispatchGroup.leave()
+                }
+            }
+
+            dispatchGroup.notify(queue: .main) {
+                completion(pokemonDetails)
             }
         }
     }
