@@ -7,7 +7,7 @@
 
 import Foundation
 
-class PokemonRequest {
+class PokemonService {
         
     func fetchPokemonList(completion: @escaping ([PokemonListData]) -> ()) {
         guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon?limit=151") else { return }
@@ -23,20 +23,6 @@ class PokemonRequest {
         task.resume()
     }
     
-    func fetchPokemonDetail(pokemon: PokemonListData, completion: @escaping (PokemonDetailsData) -> ()) {
-        guard let pokemonURL = URL(string: pokemon.url) else { return }
-        let task = URLSession.shared.dataTask(with: pokemonURL) { (data, response, error) in
-            guard let responseData = data else { return }
-            do {
-                let pokemonDetail = try JSONDecoder().decode(PokemonDetailsData.self, from: responseData)
-                completion(pokemonDetail)
-            } catch {
-                print("error: \(error)")
-            }
-        }
-        task.resume()
-    }
-
     func fetchPokemonDetail(pokemon: PokemonListData, completion: @escaping (Pokemon) -> ()) {
         guard let pokemonURL = URL(string: pokemon.url) else { return }
         let task = URLSession.shared.dataTask(with: pokemonURL) { (data, response, error) in
@@ -53,30 +39,8 @@ class PokemonRequest {
         }
         task.resume()
     }
-
-    func getPokemonDetails(completion: @escaping ([PokemonDetailsData]) -> ()) {
-        var pokemonDetails: [PokemonDetailsData] = []
-        var count = 0
-        let dispatchGroup = DispatchGroup()
-
-        fetchPokemonList { pokemonList in
-            for pokemon in pokemonList {
-                dispatchGroup.enter()
-                self.fetchPokemonDetail(pokemon: pokemon) { pokemonDetail in
-                    let pokemonDetail = pokemonDetail
-                    pokemonDetails.append(pokemonDetail)
-                    count += 1
-                    dispatchGroup.leave()
-                }
-            }
-
-            dispatchGroup.notify(queue: .main) {
-                completion(pokemonDetails)
-            }
-        }
-    }
     
-    func getPokemonDetails(completion: @escaping ([Pokemon]) -> ()) {
+    func getListPokemonDetails(completion: @escaping ([Pokemon]) -> ()) {
         var pokemonDetails: [Pokemon] = []
         let dispatchGroup = DispatchGroup()
 

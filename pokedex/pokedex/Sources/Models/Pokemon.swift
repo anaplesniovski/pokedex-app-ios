@@ -9,7 +9,7 @@ import Foundation
 
 struct Pokemon {
     let name: String
-    let types: [String]   // ou usa um segunda struct?
+    let types: [String]  
     let height: Int
     let weight: Int
     let image: String
