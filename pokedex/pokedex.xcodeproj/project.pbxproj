@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		962322EC2A3388C600C85D93 /* PokemonListCellConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 962322EB2A3388C600C85D93 /* PokemonListCellConstants.swift */; };
 		963AFC752A29006A0039A8FD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963AFC742A29006A0039A8FD /* AppDelegate.swift */; };
 		963AFC772A29006A0039A8FD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963AFC762A29006A0039A8FD /* SceneDelegate.swift */; };
 		963AFC792A29006A0039A8FD /* PokemonListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 963AFC782A29006A0039A8FD /* PokemonListViewController.swift */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		962322EB2A3388C600C85D93 /* PokemonListCellConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonListCellConstants.swift; sourceTree = "<group>"; };
 		963AFC712A29006A0039A8FD /* pokedex.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = pokedex.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		963AFC742A29006A0039A8FD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		963AFC762A29006A0039A8FD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 			isa = PBXGroup;
 			children = (
 				9698706B2A324C840056EDAE /* PokemonListConstants.swift */,
+				962322EB2A3388C600C85D93 /* PokemonListCellConstants.swift */,
 			);
 			path = Contants;
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				963AFC792A29006A0039A8FD /* PokemonListViewController.swift in Sources */,
+				962322EC2A3388C600C85D93 /* PokemonListCellConstants.swift in Sources */,
 				9698705B2A2AB1ED0056EDAE /* Pokemon.swift in Sources */,
 				963AFC8D2A2900FE0039A8FD /* PokemonData.swift in Sources */,
 				963AFC892A2900CF0039A8FD /* PokemonListCell.swift in Sources */,

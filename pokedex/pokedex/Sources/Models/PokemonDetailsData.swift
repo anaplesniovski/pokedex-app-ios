@@ -13,6 +13,7 @@ struct PokemonDetailsData: Decodable {
     let weight: Int
     let image: ImageData
     let types: [TypeData]
+    let id: Int
     
     enum CodingKeys: String, CodingKey {
         case name
@@ -20,6 +21,7 @@ struct PokemonDetailsData: Decodable {
         case weight
         case image = "sprites"
         case types
+        case id
     }
     
     init(from decoder: Decoder) throws {
@@ -29,6 +31,7 @@ struct PokemonDetailsData: Decodable {
         self.weight = try container.decode(Int.self, forKey: .weight)
         self.image = try container.decode(ImageData.self, forKey: .image)
         self.types = try container.decode([TypeData].self, forKey: .types)
+        self.id = try container.decode(Int.self, forKey: .id)
     }
 }
 

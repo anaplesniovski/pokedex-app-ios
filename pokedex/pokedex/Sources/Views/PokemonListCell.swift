@@ -10,11 +10,14 @@ import UIKit
 
 class PokemonListCell: UITableViewCell {
     
+    private let constants = PokemonListCellConstants.PokemonListCell.self
+    
     var details: Pokemon? {
         didSet {
             guard let pokemon = details else { return }
             nameLabel.text = pokemon.name
-            typeLabel.text = pokemon.types.isEmpty == true ? "" : pokemon.types.joined(separator: " ")
+            typeLabel.text = pokemon.types.isEmpty == true ? "" : pokemon.types.joined(separator: " / ")
+            idLabel.text = String(pokemon.id)
         }
     }
     
@@ -43,6 +46,14 @@ class PokemonListCell: UITableViewCell {
         return view
     }()
     
+    let idLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .black
+        label.font = .systemFont(ofSize: 12)
+        return label
+    }()
+    
     let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -62,6 +73,7 @@ class PokemonListCell: UITableViewCell {
     private func addComponents() {
         contentView.addSubview(stackView)
         stackView.addArrangedSubview(view)
+        view.addSubview(idLabel)
         view.addSubview(nameLabel)
         view.addSubview(typeLabel)
     }
@@ -71,20 +83,24 @@ class PokemonListCell: UITableViewCell {
         stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
         stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
         stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-        stackView.heightAnchor.constraint(equalToConstant: 130),
+        stackView.heightAnchor.constraint(equalToConstant: constants.StackView.height),
         
         view.topAnchor.constraint(equalTo: stackView.topAnchor),
         view.leadingAnchor.constraint(equalTo: leadingAnchor),
         view.trailingAnchor.constraint(equalTo: trailingAnchor),
-        view.heightAnchor.constraint(equalToConstant: 130),
+        view.heightAnchor.constraint(equalToConstant: constants.View.height),
         
-        nameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 34),
-        nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-        nameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -194),
+        idLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: constants.IdLabel.top),
+        idLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.IdLabel.leading),
+        idLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.IdLabel.trailing),
         
-        typeLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 12),
-        typeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-        typeLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -180)
+        nameLabel.topAnchor.constraint(equalTo: idLabel.topAnchor, constant: constants.NameLabel.top),
+        nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.NameLabel.leading),
+        nameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.NameLabel.trailing),
+        
+        typeLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: constants.TypeLbale.top),
+        typeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.TypeLbale.leading),
+        typeLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.TypeLbale.trailing)
         ])
     }
 }
