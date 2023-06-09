@@ -15,20 +15,10 @@ class PokemonListCell: UITableViewCell {
     var details: Pokemon? {
         didSet {
             guard let pokemon = details else { return }
-            nameLabel.text = pokemon.name
-            typeLabel.text = pokemon.types.isEmpty == true ? "" : pokemon.types.joined(separator: " / ")
+            nameLabel.text = pokemon.name.capitalized
+            typeLabel.text = pokemon.types.isEmpty == true ? "" : pokemon.types.joined(separator: " / ").capitalized
             idLabel.text = String(pokemon.id)
         }
-    }
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        addComponents()
-        setContransts()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
     }
     
     let stackView: UIStackView = {
@@ -69,6 +59,16 @@ class PokemonListCell: UITableViewCell {
         label.font = .systemFont(ofSize: 12)
         return label
     }()
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        addComponents()
+        setContransts()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
     
     private func addComponents() {
         contentView.addSubview(stackView)

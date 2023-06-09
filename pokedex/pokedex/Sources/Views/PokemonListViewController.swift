@@ -73,6 +73,10 @@ class PokemonListViewController: UIViewController {
         }
     }
     
+    func formatDetailString() {
+        
+    }
+    
     private func addComponents() {
         view.addSubview(pokeballImageView)
         view.addSubview(titleLabel)
