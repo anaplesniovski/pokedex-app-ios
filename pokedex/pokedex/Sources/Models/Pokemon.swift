@@ -13,5 +13,6 @@ struct Pokemon {
     let height: Int
     let weight: Int
     let image: String
+    let id: Int
 }
 

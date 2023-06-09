@@ -10,25 +10,15 @@ import UIKit
 
 class PokemonListCell: UITableViewCell {
     
-    var pokemonDetails: Pokemon? {
+    private let constants = PokemonListCellConstants.PokemonListCell.self
+    
+    var details: Pokemon? {
         didSet {
-            guard let pokemonItem = pokemonDetails else { return }
-            nameLabel.text = pokemonItem.name
-            typeLabel.text = pokemonItem.types.isEmpty == true ? "" : pokemonItem.types.joined(separator: " ")
+            guard let pokemon = details else { return }
+            nameLabel.text = pokemon.name.capitalized
+            typeLabel.text = pokemon.types.isEmpty == true ? "" : pokemon.types.joined(separator: " / ").capitalized
+            idLabel.text = String(pokemon.id)
         }
-    }
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.addSubview(stackView)
-        stackView.addArrangedSubview(view)
-        view.addSubview(nameLabel)
-        view.addSubview(typeLabel)
-        setContransts()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
     }
     
     let stackView: UIStackView = {
@@ -44,6 +34,14 @@ class PokemonListCell: UITableViewCell {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
+    }()
+    
+    let idLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .black
+        label.font = .systemFont(ofSize: 12)
+        return label
     }()
     
     let nameLabel: UILabel = {
@@ -62,23 +60,47 @@ class PokemonListCell: UITableViewCell {
         return label
     }()
     
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        addComponents()
+        setContransts()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    private func addComponents() {
+        contentView.addSubview(stackView)
+        stackView.addArrangedSubview(view)
+        view.addSubview(idLabel)
+        view.addSubview(nameLabel)
+        view.addSubview(typeLabel)
+    }
+    
     private func setContransts() {
-        stackView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-        stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-        stackView.heightAnchor.constraint(equalToConstant: 130).isActive = true
+        NSLayoutConstraint.activate([
+        stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
+        stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+        stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+        stackView.heightAnchor.constraint(equalToConstant: constants.StackView.height),
         
-        view.topAnchor.constraint(equalTo: stackView.topAnchor).isActive = true
-        view.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
-        view.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        view.heightAnchor.constraint(equalToConstant: 130).isActive = true
+        view.topAnchor.constraint(equalTo: stackView.topAnchor),
+        view.leadingAnchor.constraint(equalTo: leadingAnchor),
+        view.trailingAnchor.constraint(equalTo: trailingAnchor),
+        view.heightAnchor.constraint(equalToConstant: constants.View.height),
         
-        nameLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 34).isActive = true
-        nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        nameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -194).isActive = true
+        idLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: constants.IdLabel.top),
+        idLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.IdLabel.leading),
+        idLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.IdLabel.trailing),
         
-        typeLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 12).isActive = true
-        typeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        typeLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -180).isActive = true
+        nameLabel.topAnchor.constraint(equalTo: idLabel.topAnchor, constant: constants.NameLabel.top),
+        nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.NameLabel.leading),
+        nameLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.NameLabel.trailing),
+        
+        typeLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: constants.TypeLbale.top),
+        typeLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.TypeLbale.leading),
+        typeLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.TypeLbale.trailing)
+        ])
     }
 }

@@ -31,7 +31,7 @@ class PokemonService {
                 let pokemonDetail = try JSONDecoder().decode(PokemonDetailsData.self, from: responseData)
                 let image = pokemonDetail.image.imagePositions.frontDefault.imageURLFront
                 let types = pokemonDetail.types.map { $0.type.name }
-                let pokemon = Pokemon(name: pokemonDetail.name, types: types, height: pokemonDetail.height, weight: pokemonDetail.weight, image: image)
+                let pokemon = Pokemon(name: pokemonDetail.name, types: types, height: pokemonDetail.height, weight: pokemonDetail.weight, image: image, id: pokemonDetail.id)
                 completion(pokemon)
             } catch {
                 print("error: \(error)")

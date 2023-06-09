@@ -7,8 +7,9 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class PokemonListViewController: UIViewController {
     
+    private let constants = PokemonListConstants.PokemonListViewController.self
     var pokemons: [Pokemon] = []
 
     private lazy var pokeballImageView: UIImageView = {
@@ -62,7 +63,6 @@ class ViewController: UIViewController {
         view.backgroundColor = .white
         addComponents()
         setContransts()
-        setContranstsTableView()
         pokemonTableView.register(PokemonListCell.self, forCellReuseIdentifier: "pokemonCell")
         
         PokemonService().getListPokemonDetails { [weak self] pokemonDetails in
@@ -71,6 +71,10 @@ class ViewController: UIViewController {
                 self?.pokemonTableView.reloadData()
             }
         }
+    }
+    
+    func formatDetailString() {
+        
     }
     
     private func addComponents() {
@@ -82,28 +86,26 @@ class ViewController: UIViewController {
     }
     
     private func setContransts() {
-        pokeballImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        pokeballImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: 2).isActive = true
-        pokeballImageView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 2).isActive = true
-        pokeballImageView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 2).isActive = true
-
-        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 120).isActive = true
-        titleLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        titleLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
-
-        descriptionSearchLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 12).isActive = true
-        descriptionSearchLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        descriptionSearchLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
-
-        searchTextField.topAnchor.constraint(equalTo: descriptionSearchLabel.bottomAnchor, constant: 18).isActive = true
-        searchTextField.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        searchTextField.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -40).isActive = true
-        searchTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-    }
-    
-    private func setContranstsTableView() {
         NSLayoutConstraint.activate([
-            pokemonTableView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 50),
+            pokeballImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pokeballImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: constants.PokeballImageView.top),
+            pokeballImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.PokeballImageView.leading),
+            pokeballImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.PokeballImageView.trailing),
+
+            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: constants.TitleLabel.top),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.TitleLabel.leading),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.TitleLabel.trailing),
+
+            descriptionSearchLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: constants.DescriptionSearchLabel.top),
+            descriptionSearchLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.DescriptionSearchLabel.leading),
+            descriptionSearchLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.DescriptionSearchLabel.trailing),
+
+            searchTextField.topAnchor.constraint(equalTo: descriptionSearchLabel.bottomAnchor, constant: constants.SearchTextField.top),
+            searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.SearchTextField.leading),
+            searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.SearchTextField.trailing),
+            searchTextField.heightAnchor.constraint(equalToConstant: constants.SearchTextField.height),
+            
+            pokemonTableView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: constants.PokemonTableView.top),
             pokemonTableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             pokemonTableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             pokemonTableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
@@ -111,7 +113,7 @@ class ViewController: UIViewController {
     }
 }
 
-extension ViewController: UITableViewDataSource {
+extension PokemonListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return pokemons.count
@@ -119,12 +121,12 @@ extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "pokemonCell", for: indexPath) as! PokemonListCell
-        cell.pokemonDetails = pokemons[indexPath.row]
+        cell.details = pokemons[indexPath.row]
         return cell
     }
 }
 
-extension ViewController: UITableViewDelegate {
+extension PokemonListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         150
