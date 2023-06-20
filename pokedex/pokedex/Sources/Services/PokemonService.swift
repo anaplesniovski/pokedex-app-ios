@@ -6,9 +6,12 @@
 //
 
 import Foundation
+import UIKit
 
 class PokemonService {
-        
+    
+    let imageDownloadService = ImageDownloadService()
+    
     func fetchPokemonList(completion: @escaping ([PokemonListData]) -> ()) {
         guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon?limit=151") else { return }
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
@@ -23,40 +26,85 @@ class PokemonService {
         task.resume()
     }
     
-    func fetchPokemonDetail(pokemon: PokemonListData, completion: @escaping (Pokemon) -> ()) {
-        guard let pokemonURL = URL(string: pokemon.url) else { return }
+    
+    func fetchPokemonDetail(pokemon: PokemonListData, completion: @escaping (Result<Pokemon, Error>) -> Void) {
+        guard let pokemonURL = URL(string: pokemon.url) else {
+            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
+            return
+        }
+        
         let task = URLSession.shared.dataTask(with: pokemonURL) { (data, response, error) in
-            guard let responseData = data else { return }
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let responseData = data else {
+                completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Empty response data"])))
+                return
+            }
+            
             do {
                 let pokemonDetail = try JSONDecoder().decode(PokemonDetailsData.self, from: responseData)
-                let image = pokemonDetail.image.imagePositions.frontDefault.imageURLFront
-                let types = pokemonDetail.types.map { $0.type.name }
-                let pokemon = Pokemon(name: pokemonDetail.name, types: types, height: pokemonDetail.height, weight: pokemonDetail.weight, image: image, id: pokemonDetail.id)
-                completion(pokemon)
-            } catch {
-                print("error: \(error)")
+                let imageUrlString = pokemonDetail.image.imagePositions.frontDefault.imageURLFront
+                guard let imageUrl = URL(string: imageUrlString) else {
+                    completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid image URL"])))
+                    return
+                }
+                
+                self.imageDownloadService.imageDownload(from: imageUrl) { result in
+                    switch result {
+                    case .success(_):
+                        let types = pokemonDetail.types.map { $0.type.name }
+                        let pokemon = Pokemon(name: pokemonDetail.name, types: types, height: pokemonDetail.height, weight: pokemonDetail.weight, image: imageUrlString, id: pokemonDetail.id)
+                        completion(.success(pokemon))
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                }
+            } catch let error {
+                completion(.failure(error))
             }
         }
         task.resume()
     }
     
     func getListPokemonDetails(completion: @escaping ([Pokemon]) -> ()) {
-        var pokemonDetails: [Pokemon] = []
+        
         let dispatchGroup = DispatchGroup()
-
+        var pokemonDetails: [Pokemon] = []
+        
         fetchPokemonList { pokemonList in
             for pokemon in pokemonList {
                 dispatchGroup.enter()
-                self.fetchPokemonDetail(pokemon: pokemon) { pokemonDetail in
-                    let pokemonDetail = pokemonDetail
-                    pokemonDetails.append(pokemonDetail)
-                    dispatchGroup.leave()
+                self.fetchPokemonDetail(pokemon: pokemon) { result in
+                    switch result {
+                    case .success(let pokemonDetail):
+                        pokemonDetails.append(pokemonDetail)
+                        dispatchGroup.leave()
+                    case .failure(let error):
+                        dispatchGroup.leave()
+                        print("Failed to fetch pokemon detail: \(error)")
+                    }
                 }
             }
-
+            
             dispatchGroup.notify(queue: .main) {
                 completion(pokemonDetails)
             }
         }
+        
+        func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+            imageDownloadService.imageDownload(from: url) { result in
+                switch result {
+                case .success(let image):
+                    completion(image)
+                case .failure(let error):
+                    print("Failed to download image: \(error)")
+                    completion(nil)
+                }
+            }
+        }
+        
     }
 }

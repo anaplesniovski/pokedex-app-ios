@@ -14,8 +14,8 @@ class PokemonListViewController: UIViewController {
 
     private lazy var pokeballImageView: UIImageView = {
         let imageView = UIImageView(frame: CGRectMake(0, 0, 414, 414))
-        imageView.image = UIImage(named: "pokeball")
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "pokeball")
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -73,10 +73,6 @@ class PokemonListViewController: UIViewController {
         }
     }
     
-    func formatDetailString() {
-        
-    }
-    
     private func addComponents() {
         view.addSubview(pokeballImageView)
         view.addSubview(titleLabel)
@@ -87,7 +83,6 @@ class PokemonListViewController: UIViewController {
     
     private func setContransts() {
         NSLayoutConstraint.activate([
-            pokeballImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             pokeballImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: constants.PokeballImageView.top),
             pokeballImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.PokeballImageView.leading),
             pokeballImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.PokeballImageView.trailing),
@@ -121,7 +116,7 @@ extension PokemonListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "pokemonCell", for: indexPath) as! PokemonListCell
-        cell.details = pokemons[indexPath.row]
+        cell.configure = pokemons[indexPath.row]
         return cell
     }
 }
@@ -129,6 +124,6 @@ extension PokemonListViewController: UITableViewDataSource {
 extension PokemonListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        150
+        420
     }
 }
