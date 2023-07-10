@@ -5,7 +5,7 @@
 //  Created by Ana Paula Lesniovski dos Santos on 02/06/23.
 //
 
-import Foundation
+import UIKit
 
 struct Pokemon {
     let name: String
@@ -14,5 +14,6 @@ struct Pokemon {
     let weight: Int
     let image: String
     let id: Int
+    var imageData: UIImage?
 }
 
