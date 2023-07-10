@@ -52,7 +52,7 @@ struct ImagePositionsData: Decodable {
     let frontDefault: FrontDefaultData
     
     enum CodingKeys: String, CodingKey {
-        case frontDefault = "dream_world"
+        case frontDefault = "home"
     }
     
     init(from decoder: Decoder) throws {

@@ -124,6 +124,6 @@ extension PokemonListViewController: UITableViewDataSource {
 extension PokemonListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        420
+        140
     }
 }
