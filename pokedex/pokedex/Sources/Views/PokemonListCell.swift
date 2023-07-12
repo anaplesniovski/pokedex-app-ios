@@ -11,7 +11,7 @@ import UIKit
 class PokemonListCell: UITableViewCell {
     
     private let constants = PokemonListCellConstants.PokemonListCell.self
-    let imageDownloadServide = ImageDownloadService()
+    let imageDownloadServide = PokemonImageService()
     var imageDownloadTask: URLSessionDataTask?
 
     private lazy var stackView: UIStackView = {
@@ -136,7 +136,7 @@ class PokemonListCell: UITableViewCell {
     }
     
     private func setImage(from url: URL) {
-        imageDownloadServide.imageDownload(from: url) { [weak self] result in
+        imageDownloadServide.fetchImagePokemon(from: url) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let image):

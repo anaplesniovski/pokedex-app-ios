@@ -10,7 +10,7 @@ import UIKit
 
 class PokemonService {
     
-    let imageDownloadService = ImageDownloadService()
+    let pokemonImageService = PokemonImageService()
     
     func fetchPokemonList(completion: @escaping ([PokemonListData]) -> ()) {
         guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon?limit=151") else { return }
@@ -52,7 +52,7 @@ class PokemonService {
                     return
                 }
                 
-                self.imageDownloadService.imageDownload(from: imageUrl) { result in
+                self.pokemonImageService.fetchImagePokemon(from: imageUrl) { result in
                     switch result {
                     case .success(_):
                         let types = pokemonDetail.types.map { $0.type.name }
@@ -93,18 +93,5 @@ class PokemonService {
                 completion(pokemonDetails)
             }
         }
-        
-        func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
-            imageDownloadService.imageDownload(from: url) { result in
-                switch result {
-                case .success(let image):
-                    completion(image)
-                case .failure(let error):
-                    print("Failed to download image: \(error)")
-                    completion(nil)
-                }
-            }
-        }
-        
     }
 }

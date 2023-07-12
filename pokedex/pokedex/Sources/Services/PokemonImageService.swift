@@ -7,9 +7,9 @@
 
 import UIKit
 
-class ImageDownloadService {
+class PokemonImageService {
     
-    func imageDownload(from url: URL, completion: @escaping (Result<UIImage?, Error>) -> Void) {
+    func fetchImagePokemon(from url: URL, completion: @escaping (Result<UIImage?, Error>) -> Void) {
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
                 completion(.failure(error))
@@ -25,5 +25,17 @@ class ImageDownloadService {
             completion(.success(image))
         }
         task.resume()
+    }
+    
+    func getImagePokemon(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        fetchImagePokemon(from: url) { result in
+            switch result {
+            case .success(let image):
+                completion(image)
+            case .failure(let error):
+                print("Failed to download image: \(error)")
+                completion(nil)
+            }
+        }
     }
 }
