@@ -11,6 +11,7 @@ class PokemonListViewController: UIViewController {
     
     private let constants = PokemonListConstants.PokemonListViewController.self
     var pokemons: [Pokemon] = []
+    var filteredPokemon: [Pokemon] = []
 
     private lazy var pokeballImageView: UIImageView = {
         let imageView = UIImageView(frame: CGRectMake(0, 0, 414, 414))
@@ -42,11 +43,13 @@ class PokemonListViewController: UIViewController {
     }()
     
     private lazy var searchTextField: UITextField = {
-        let textField = UITextField()
+        let textField = UITextField(frame: .zero)
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Qual Pokémon você está procurando?"
         textField.textAlignment = .center
+        textField.textColor = .black
         textField.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1)
+        textField.delegate = self
         return textField
     }()
     
@@ -64,8 +67,12 @@ class PokemonListViewController: UIViewController {
         addComponents()
         setContransts()
         pokemonTableView.register(PokemonListCell.self, forCellReuseIdentifier: "pokemonCell")
+        loadPokemonList()
         
-        PokemonService().getListPokemonDetails { [weak self] pokemonDetails in
+    }
+    
+    func loadPokemonList() {
+        PokemonService.shared.getListPokemonDetails { [weak self] pokemonDetails in
             self?.pokemons = pokemonDetails
             DispatchQueue.main.async {
                 self?.pokemonTableView.reloadData()
@@ -127,3 +134,31 @@ extension PokemonListViewController: UITableViewDelegate {
         140
     }
 }
+
+extension PokemonListViewController: UITextFieldDelegate {
+    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        if let searchText = textField.text {
+            if searchText.isEmpty {
+                textField.resignFirstResponder()
+                loadPokemonList()
+            } else {
+                DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                    let updatedList = self?.pokemons.filter { $0.name.lowercased().contains(searchText.lowercased()) ||
+                        String($0.id).contains(searchText) } ?? []
+                    DispatchQueue.main.async {
+                        self?.pokemons = updatedList
+                        self?.pokemonTableView.reloadData()
+                    }
+                }
+            }
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+}
+
+
