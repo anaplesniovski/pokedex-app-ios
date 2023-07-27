@@ -38,8 +38,6 @@ struct PokemonListCellConstants {
         }
         
         struct PokemonImageView {
-            //static let top: CGFloat = 290
-            //static let bottom: CGFloat =
             static let leading: CGFloat = 194
             static let trailing: CGFloat = -10
             static let height: CGFloat = 130

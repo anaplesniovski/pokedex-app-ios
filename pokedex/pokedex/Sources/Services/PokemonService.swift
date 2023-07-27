@@ -10,7 +10,10 @@ import UIKit
 
 class PokemonService {
     
+    static let shared = PokemonService()
     let pokemonImageService = PokemonImageService()
+    
+    private init() {}
     
     func fetchPokemonList(completion: @escaping ([PokemonListData]) -> ()) {
         guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon?limit=151") else { return }
