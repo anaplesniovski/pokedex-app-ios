@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PokemonImageService {
+class PokemonImageService: PokemonImageServiceProtocol {
     
     func fetchImagePokemon(from url: URL, completion: @escaping (Result<UIImage?, Error>) -> Void) {
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
