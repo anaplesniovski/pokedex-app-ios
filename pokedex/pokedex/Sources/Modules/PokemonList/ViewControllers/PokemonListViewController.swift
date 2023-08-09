@@ -10,8 +10,7 @@ import UIKit
 class PokemonListViewController: UIViewController {
     
     private let constants = PokemonListConstants.PokemonListViewController.self
-    var pokemons: [Pokemon] = []
-    var filteredPokemon: [Pokemon] = []
+    private let viewModel = PokemonListViewModel()
 
     private lazy var pokeballImageView: UIImageView = {
         let imageView = UIImageView(frame: CGRectMake(0, 0, 414, 414))
@@ -64,20 +63,12 @@ class PokemonListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        viewModel.delegate = self
         addComponents()
         setContransts()
         pokemonTableView.register(PokemonListCell.self, forCellReuseIdentifier: "pokemonCell")
-        loadPokemonList()
+        viewModel.loadPokemonList()
         
-    }
-    
-    func loadPokemonList() {
-        PokemonService.shared.getListPokemonDetails { [weak self] pokemonDetails in
-            self?.pokemons = pokemonDetails
-            DispatchQueue.main.async {
-                self?.pokemonTableView.reloadData()
-            }
-        }
     }
     
     private func addComponents() {
@@ -118,12 +109,12 @@ class PokemonListViewController: UIViewController {
 extension PokemonListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return pokemons.count
+        return viewModel.filterPokemon.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "pokemonCell", for: indexPath) as! PokemonListCell
-        cell.configure = pokemons[indexPath.row]
+        cell.configure = viewModel.filterPokemon[indexPath.row]
         return cell
     }
 }
@@ -139,22 +130,10 @@ extension PokemonListViewController: UITextFieldDelegate {
     
     func textFieldDidChangeSelection(_ textField: UITextField) {
         if let searchText = textField.text {
-            if searchText.isEmpty {
-                textField.resignFirstResponder()
-                loadPokemonList()
-            } else {
-                DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-                    let updatedList = self?.pokemons.filter { $0.name.lowercased().contains(searchText.lowercased()) ||
-                        String($0.id).contains(searchText) } ?? []
-                    DispatchQueue.main.async {
-                        self?.pokemons = updatedList
-                        self?.pokemonTableView.reloadData()
-                    }
-                }
-            }
+            viewModel.filterPokemons(with: searchText)
         }
     }
-    
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -162,3 +141,10 @@ extension PokemonListViewController: UITextFieldDelegate {
 }
 
 
+extension PokemonListViewController: PokemonListViewModelDelegate {
+    func updatePokemonList() {
+        DispatchQueue.main.async {
+            self.pokemonTableView.reloadData()
+        }
+    }
+}

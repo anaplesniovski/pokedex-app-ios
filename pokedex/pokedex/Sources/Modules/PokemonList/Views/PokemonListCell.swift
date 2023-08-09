@@ -122,7 +122,6 @@ class PokemonListCell: UITableViewCell {
         ])
     }
     
-    // ? 
     var configure: Pokemon? {
         didSet {
             guard let pokemon = configure else { return }
@@ -136,7 +135,6 @@ class PokemonListCell: UITableViewCell {
         }
     }
     
-    // viewmodel
     private func setImage(from url: URL) {
         imageDownloadServide.fetchImagePokemon(from: url) { [weak self] result in
             DispatchQueue.main.async {
