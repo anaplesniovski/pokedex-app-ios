@@ -115,7 +115,6 @@ class PokemonListCell: UITableViewCell {
         
         pokemonImageView.topAnchor.constraint(equalTo: view.topAnchor),
         pokemonImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        pokemonImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.PokemonImageView.leading),
         pokemonImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.PokemonImageView.trailing),
         pokemonImageView.widthAnchor.constraint(equalToConstant: constants.PokemonImageView.width)
 
