@@ -73,7 +73,7 @@ class PokemonListCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addComponents()
-        setContransts()
+        addContransts()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -89,7 +89,7 @@ class PokemonListCell: UITableViewCell {
         view.addSubview(pokemonImageView)
     }
     
-    private func setContransts() {
+    private func addContransts() {
         NSLayoutConstraint.activate([
         stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
         stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),

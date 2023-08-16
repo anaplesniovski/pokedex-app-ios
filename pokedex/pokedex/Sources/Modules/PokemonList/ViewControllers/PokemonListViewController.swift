@@ -65,7 +65,7 @@ class PokemonListViewController: UIViewController {
         view.backgroundColor = .white
         viewModel.delegate = self
         addComponents()
-        setContransts()
+        addContransts()
         pokemonTableView.register(PokemonListCell.self, forCellReuseIdentifier: "pokemonCell")
         viewModel.loadPokemonList()
         
@@ -79,7 +79,7 @@ class PokemonListViewController: UIViewController {
         view.addSubview(pokemonTableView)
     }
     
-    private func setContransts() {
+    private func addContransts() {
         NSLayoutConstraint.activate([
             pokeballImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: constants.PokeballImageView.top),
             pokeballImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.PokeballImageView.leading),
@@ -124,7 +124,13 @@ extension PokemonListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         140
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let tableView = pokemonTableView
+        tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+    }
 }
+
 
 extension PokemonListViewController: UITextFieldDelegate {
     
