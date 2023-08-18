@@ -97,7 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				9698706A2A324C320056EDAE /* Contants */,
-				969870652A322DBA0056EDAE /* Models */,
+				969870652A322DBA0056EDAE /* Data */,
 				96680DB62A79781600FBA3A7 /* ViewControllers */,
 				969870672A322E7A0056EDAE /* ViewModels */,
 				969870662A322DC30056EDAE /* Views */,
@@ -168,14 +168,14 @@
 			path = Properties;
 			sourceTree = "<group>";
 		};
-		969870652A322DBA0056EDAE /* Models */ = {
+		969870652A322DBA0056EDAE /* Data */ = {
 			isa = PBXGroup;
 			children = (
 				9698705A2A2AB1ED0056EDAE /* Pokemon.swift */,
 				963AFC8C2A2900FE0039A8FD /* PokemonData.swift */,
 				963AFC8A2A2900EF0039A8FD /* PokemonDetailsData.swift */,
 			);
-			path = Models;
+			path = Data;
 			sourceTree = "<group>";
 		};
 		969870662A322DC30056EDAE /* Views */ = {
