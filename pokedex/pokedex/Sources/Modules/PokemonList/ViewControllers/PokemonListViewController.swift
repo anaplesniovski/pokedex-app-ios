@@ -9,9 +9,10 @@ import UIKit
 
 class PokemonListViewController: UIViewController {
     
+    private let viewModel: PokemonListViewModelProtocol
     private let constants = PokemonListConstants.PokemonListViewController.self
-    private let viewModel = PokemonListViewModel()
-
+    private let pokemonImageService = PokemonImageService()
+    
     private lazy var pokeballImageView: UIImageView = {
         let imageView = UIImageView(frame: CGRectMake(0, 0, 414, 414))
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -59,16 +60,24 @@ class PokemonListViewController: UIViewController {
         tableView.delegate = self
         return tableView
     }()
+    
+    init(viewModel: PokemonListViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         viewModel.delegate = self
         addComponents()
-        setContransts()
+        addContransts()
         pokemonTableView.register(PokemonListCell.self, forCellReuseIdentifier: "pokemonCell")
         viewModel.loadPokemonList()
-        
     }
     
     private func addComponents() {
@@ -79,7 +88,7 @@ class PokemonListViewController: UIViewController {
         view.addSubview(pokemonTableView)
     }
     
-    private func setContransts() {
+    private func addContransts() {
         NSLayoutConstraint.activate([
             pokeballImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: constants.PokeballImageView.top),
             pokeballImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.PokeballImageView.leading),
@@ -124,6 +133,15 @@ extension PokemonListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         140
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedPokemon = viewModel.filterPokemon[indexPath.row]
+        let pokemonDetailViewModel = PokemonDetailViewModel(pokemonImageService: pokemonImageService)
+        let detailPokemon = PokemonDetailViewController(pokemonDetailViewModel: pokemonDetailViewModel)
+        detailPokemon.pokemon = selectedPokemon
+        detailPokemon.configure(with: selectedPokemon)
+        navigationController?.pushViewController(detailPokemon, animated: true)
+    }
 }
 
 extension PokemonListViewController: UITextFieldDelegate {
@@ -139,7 +157,6 @@ extension PokemonListViewController: UITextFieldDelegate {
         return true
     }
 }
-
 
 extension PokemonListViewController: PokemonListViewModelDelegate {
     func updatePokemonList() {
