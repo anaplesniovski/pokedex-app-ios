@@ -3,9 +3,7 @@
 //  pokedex
 //
 //  Created by Ana Paula Lesniovski dos Santos on 01/06/23.
-//
 
-import Foundation
 import UIKit
 
 class PokemonService: PokemonServiceProtocol {
@@ -26,7 +24,6 @@ class PokemonService: PokemonServiceProtocol {
         }
         task.resume()
     }
-    
     
     func fetchPokemonDetail(pokemon: PokemonListData, completion: @escaping (Result<Pokemon, Error>) -> Void) {
         guard let pokemonURL = URL(string: pokemon.url) else {
@@ -57,7 +54,12 @@ class PokemonService: PokemonServiceProtocol {
                     switch result {
                     case .success(_):
                         let types = pokemonDetail.types.map { $0.type.name }
-                        let pokemon = Pokemon(name: pokemonDetail.name, types: types, height: pokemonDetail.height, weight: pokemonDetail.weight, image: imageUrlString, id: pokemonDetail.id)
+                        let pokemon = Pokemon(name: pokemonDetail.name,
+                                              types: types,
+                                              height: pokemonDetail.height,
+                                              weight: pokemonDetail.weight,
+                                              image: imageUrlString,
+                                              id: pokemonDetail.id)
                         completion(.success(pokemon))
                     case .failure(let error):
                         completion(.failure(error))

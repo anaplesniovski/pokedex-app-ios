@@ -3,9 +3,8 @@
 //  pokedex
 //
 //  Created by Ana Paula Lesniovski dos Santos on 01/08/23.
-//
 
-import Foundation
+import UIKit
 
 protocol PokemonServiceProtocol {
     func fetchPokemonList(completion: @escaping ([PokemonListData]) -> ())

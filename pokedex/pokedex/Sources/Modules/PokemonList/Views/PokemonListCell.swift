@@ -5,14 +5,15 @@
 //  Created by Ana Paula Lesniovski dos Santos on 01/06/23.
 //
 
-import Foundation
 import UIKit
 
 class PokemonListCell: UITableViewCell {
     
+    private let viewModel: PokemonListViewModelProtocol
+    private let pokemonService = PokemonService()
+    private let pokemonImageService = PokemonImageService()
     private let constants = PokemonListCellConstants.PokemonListCell.self
-    let imageDownloadServide = PokemonImageService()
-    var imageDownloadTask: URLSessionDataTask?
+   // var pokemon: Pokemon?
 
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
@@ -70,14 +71,22 @@ class PokemonListCell: UITableViewCell {
         return imageView
     }()
     
+    init(viewModel: PokemonListViewModelProtocol, reuseIdentifier: String?) {
+        self.viewModel = viewModel
+        super.init(style: .default, reuseIdentifier: reuseIdentifier)
+        addComponents()
+        addContransts()
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        self.viewModel = PokemonListViewModel(pokemonService: pokemonService, pokemonImageService: pokemonImageService)
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addComponents()
         addContransts()
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func addComponents() {
@@ -128,22 +137,13 @@ class PokemonListCell: UITableViewCell {
             typeLabel.text = pokemon.types.isEmpty == true ? "" : pokemon.types.joined(separator: " / ").capitalized
             idLabel.text = String(pokemon.id)
             
-            if let imageURL = URL(string: pokemon.image) {
-                setImage(from: imageURL)
-            }
-        }
-    }
-    
-    private func setImage(from url: URL) {
-        imageDownloadServide.fetchImagePokemon(from: url) { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let image):
+            viewModel.loadPokemonImage(from: pokemon.image) { [weak self] image in
+                DispatchQueue.main.async {
                     self?.pokemonImageView.image = image
-                case .failure(let error):
-                    print("Failed to download image from URL: \(url). Error: \(error)")
                 }
             }
         }
     }
 }
+
+
