@@ -13,8 +13,12 @@ Este é um projeto de estudo em andamento que demonstra uma aplicação iOS simp
 
 - execute o projeto no simulador iOS ou em um dispositivo físico.
 
-### Funcionalidades (em Desenvolvimento)
-Lista de Pokémon: Exibe uma lista de Pokémon, com opção de pesquisa por nome ou número do Pokédex Nacional.
-Detalhes do Pokémon: Permite visualizar informações detalhadas sobre um Pokémon selecionado na lista.
+### Funcionalidades 
+- Lista de Pokémon: Exibe uma lista de Pokémon, com opção de pesquisa por nome ou número do Pokédex Nacional.
+- Detalhes do Pokémon: Permite visualizar informações detalhadas sobre um Pokémon selecionado na lista.
+
+### Próximos passos
+- Exibir mais detalhes do Pokémon, como habilidades, estatísticas, altura, peso, evoluçoēs e descrição geral.
+- Implementar filtro por tipo de Pokémon.
 
 
