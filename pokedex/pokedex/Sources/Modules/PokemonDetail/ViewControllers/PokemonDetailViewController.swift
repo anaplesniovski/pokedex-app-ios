@@ -7,10 +7,9 @@
 import UIKit
 
 class PokemonDetailViewController: UIViewController {
-    
-    private let pokemonDetailViewModel: PokemonDetailViewModelProtocol
+
     private let constants = PokemonDetailConstants.PokemonDetailViewController.self
-    var pokemon: Pokemon?
+    var pokemon: [PokemonDetails]?
     
     private lazy var mainView: UIView = {
         let view = UIView()
@@ -52,8 +51,7 @@ class PokemonDetailViewController: UIViewController {
         return label
     }()
     
-    init(pokemonDetailViewModel: PokemonDetailViewModelProtocol) {
-        self.pokemonDetailViewModel = pokemonDetailViewModel
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -107,35 +105,23 @@ class PokemonDetailViewController: UIViewController {
         ])
     }
     
-    func configure(with pokemon: Pokemon) {
+    func configureUI(with pokemon: PokemonDetails) {
+        
         idLabel.text = String(pokemon.id)
         nameLabel.text = pokemon.name
+        typeLabel.text = pokemon.types.map { $0.type.name.capitalized }.joined(separator: " / ")
 
-        let typesString = pokemon.types.joined(separator: ", ")
-        typeLabel.text = typesString
-
-        if let imageURL = URL(string: pokemon.image) {
-            configureImagePokemon(from: imageURL)
-        }
-    }
-}
-
-extension PokemonDetailViewController {
-    func configureImagePokemon(from url: URL) {
-        pokemonDetailViewModel.loadPokemonImageDetail(from: url) { [weak self] image in
-            DispatchQueue.main.async {
-                if let image = image {
-                    self?.updatePokemonImage(image)
-                } else {
-                    self?.pokemonDetailViewModel.handleImageLoadingError()
-                }
-            }
-        }
-    }
+        guard let imageURL = URL(string: pokemon.image.imagePositions.frontDefault.imageURLFront) else { return }
     
-    private func updatePokemonImage(_ image: UIImage) {
-        pokemonImageView.image = image
+        URLSession.shared.dataTask(with: imageURL) { (data, response, error) in
+            if let data = data {
+                DispatchQueue.main.async {
+                    self.pokemonImageView.image = UIImage(data: data)
+                }
+            } else if let error = error {
+                print("Erro ao carregar a imagem: \(error)")
+            }
+        }.resume()
     }
 }
-
 

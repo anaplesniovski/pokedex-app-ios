@@ -6,29 +6,11 @@
 
 import UIKit
 
-class PokemonDetailViewModel: PokemonDetailViewModelProtocol {
-
-    private let pokemonImageService: PokemonImageServiceProtocol
+class PokemonDetailViewModel {
     
-    init(pokemonImageService: PokemonImageServiceProtocol) {
-        self.pokemonImageService = pokemonImageService
-    }
+    private let service: ServiceProtocol
     
-    func loadPokemonImageDetail(from url: URL, completion: @escaping (UIImage?) -> Void) {
-        pokemonImageService.fetchImagePokemon(from: url) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let image):
-                    completion(image)
-                case .failure(let error):
-                    print("Failed to download image from URL: \(url). Error: \(error)")
-                    completion(nil)
-                }
-            }
-        }
-    }
-    
-    func handleImageLoadingError() {
-        print("Failed to download image")
+    init( service: ServiceProtocol = Service()) {
+        self.service = service
     }
 }

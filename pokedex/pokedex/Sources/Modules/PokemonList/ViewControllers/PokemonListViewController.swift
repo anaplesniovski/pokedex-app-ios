@@ -9,11 +9,11 @@ import UIKit
 
 class PokemonListViewController: UIViewController {
     
-    private let viewModel: PokemonListViewModelProtocol
     private let constants = PokemonListConstants.PokemonListViewController.self
-    private let pokemonImageService = PokemonImageService()
+    lazy var viewModel = PokemonListViewModel(delegate: self)
+    var pokemonDetails: [PokemonDetails]?
     
-    private lazy var pokeballImageView: UIImageView = {
+    private lazy var imageView: UIImageView = {
         let imageView = UIImageView(frame: CGRectMake(0, 0, 414, 414))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(named: "pokeball")
@@ -30,7 +30,7 @@ class PokemonListViewController: UIViewController {
         return label
     }()
     
-    private lazy var descriptionSearchLabel: UILabel = {
+    private lazy var textLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Busque o Pokémon pelo nome ou usando o número Pokédex Nacional"
@@ -42,27 +42,27 @@ class PokemonListViewController: UIViewController {
         return label
     }()
     
-    private lazy var searchTextField: UITextField = {
-        let textField = UITextField(frame: .zero)
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Qual Pokémon você está procurando?"
-        textField.textAlignment = .center
-        textField.textColor = .black
-        textField.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1)
-        textField.delegate = self
-        return textField
+    private lazy var searchBar: UISearchBar = {
+        let searchBar = UISearchBar()
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.placeholder = "Qual Pokémon você está procurando?"
+        searchBar.searchBarStyle = .minimal
+        searchBar.isTranslucent = true
+        searchBar.layer.cornerRadius = 10
+        searchBar.delegate = self
+        return searchBar
     }()
     
-    private lazy var pokemonTableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorStyle = .none
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
     }()
     
-    init(viewModel: PokemonListViewModelProtocol) {
-        self.viewModel = viewModel
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -76,54 +76,60 @@ class PokemonListViewController: UIViewController {
         viewModel.delegate = self
         addComponents()
         addContransts()
-        pokemonTableView.register(PokemonListCell.self, forCellReuseIdentifier: "pokemonCell")
-        viewModel.loadPokemonList()
+        tableView.register(PokemonListCell.self, forCellReuseIdentifier: "pokemonCell")
+        viewModel.fetchPokemons()
     }
     
     private func addComponents() {
-        view.addSubview(pokeballImageView)
+        view.addSubview(imageView)
         view.addSubview(titleLabel)
-        view.addSubview(descriptionSearchLabel)
-        view.addSubview(searchTextField)
-        view.addSubview(pokemonTableView)
+        view.addSubview(textLabel)
+        view.addSubview(searchBar)
+        view.addSubview(tableView)
     }
     
     private func addContransts() {
         NSLayoutConstraint.activate([
-            pokeballImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: constants.PokeballImageView.top),
-            pokeballImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.PokeballImageView.leading),
-            pokeballImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.PokeballImageView.trailing),
+            imageView.topAnchor.constraint(equalTo: view.topAnchor, constant: constants.ImageView.top),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.ImageView.leading),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.ImageView.trailing),
 
             titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: constants.TitleLabel.top),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.TitleLabel.leading),
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.TitleLabel.trailing),
 
-            descriptionSearchLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: constants.DescriptionSearchLabel.top),
-            descriptionSearchLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.DescriptionSearchLabel.leading),
-            descriptionSearchLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.DescriptionSearchLabel.trailing),
+            textLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: constants.TextLabel.top),
+            textLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.TextLabel.leading),
+            textLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.TextLabel.trailing),
 
-            searchTextField.topAnchor.constraint(equalTo: descriptionSearchLabel.bottomAnchor, constant: constants.SearchTextField.top),
-            searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.SearchTextField.leading),
-            searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.SearchTextField.trailing),
-            searchTextField.heightAnchor.constraint(equalToConstant: constants.SearchTextField.height),
+            searchBar.topAnchor.constraint(equalTo: textLabel.bottomAnchor, constant: constants.SearchBar.top),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: constants.SearchBar.leading),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: constants.SearchBar.trailing),
             
-            pokemonTableView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: constants.PokemonTableView.top),
-            pokemonTableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            pokemonTableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            pokemonTableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: constants.TableView.top),
+            tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
+    }
+    
+    func updateView(pokemon: [PokemonDetails]) {
+        self.pokemonDetails = pokemon
+        self.tableView.reloadData()
     }
 }
 
 extension PokemonListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.filterPokemon.count
+        return pokemonDetails?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "pokemonCell", for: indexPath) as! PokemonListCell
-        cell.configure = viewModel.filterPokemon[indexPath.row]
+        if let pokemon = pokemonDetails?[indexPath.row] {
+                   cell.configure = pokemon
+               }
         return cell
     }
 }
@@ -135,33 +141,33 @@ extension PokemonListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedPokemon = viewModel.filterPokemon[indexPath.row]
-        let pokemonDetailViewModel = PokemonDetailViewModel(pokemonImageService: pokemonImageService)
-        let detailPokemon = PokemonDetailViewController(pokemonDetailViewModel: pokemonDetailViewModel)
-        detailPokemon.pokemon = selectedPokemon
-        detailPokemon.configure(with: selectedPokemon)
-        navigationController?.pushViewController(detailPokemon, animated: true)
-    }
-}
-
-extension PokemonListViewController: UITextFieldDelegate {
-    
-    func textFieldDidChangeSelection(_ textField: UITextField) {
-        if let searchText = textField.text {
-            viewModel.filterPokemons(with: searchText)
+        if let selectedPokemon = pokemonDetails?[indexPath.row] {
+            let detailViewController = PokemonDetailViewController()
+            detailViewController.configureUI(with: selectedPokemon)
+            navigationController?.pushViewController(detailViewController, animated: true)
         }
     }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
 }
 
-extension PokemonListViewController: PokemonListViewModelDelegate {
-    func updatePokemonList() {
+extension PokemonListViewController: PokemonDetailsDelegate {
+    func didFetchPokemonList(pokemonDetails: [PokemonDetails]) {
         DispatchQueue.main.async {
-            self.pokemonTableView.reloadData()
+            self.updateView(pokemon: pokemonDetails)
+            self.tableView.reloadData()
         }
+    }
+    
+    func showError(error: Error) {
+        print("\(error)")
+    }
+}
+
+extension PokemonListViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        viewModel.filterPokemon(with: searchText)
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }

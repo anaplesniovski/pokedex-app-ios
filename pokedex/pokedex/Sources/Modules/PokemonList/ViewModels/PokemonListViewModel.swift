@@ -7,62 +7,101 @@
 
 import UIKit
 
-protocol PokemonListViewModelDelegate: AnyObject {
-    func updatePokemonList()
+protocol PokemonDetailsDelegate: AnyObject {
+    func didFetchPokemonList(pokemonDetails: [PokemonDetails])
+    func showError(error: Error)
 }
 
-class PokemonListViewModel: PokemonListViewModelProtocol {
-    
-    private let pokemonService: PokemonServiceProtocol
-    private let pokemonImageService: PokemonImageServiceProtocol
-    private var pokemons: [Pokemon] = []
-    
-    weak var delegate: PokemonListViewModelDelegate?
-    
-    init(pokemonService: PokemonServiceProtocol, pokemonImageService: PokemonImageServiceProtocol) {
-        self.pokemonService = pokemonService
-        self.pokemonImageService = pokemonImageService
+class PokemonListViewModel {
+
+    private var allPokemons: [PokemonDetails] = []
+    var filteredPokemon: [PokemonDetails] = []
+
+    var pokemon: [PokemonDetails] {
+        return filteredPokemon.isEmpty ? allPokemons : filteredPokemon
     }
-    
-    var filterPokemon: [Pokemon] = [] {
-        didSet {
-            delegate?.updatePokemonList()
-        }
+
+    weak var delegate: PokemonDetailsDelegate?
+    private let service: ServiceProtocol
+
+    init(delegate: PokemonDetailsDelegate?, service: ServiceProtocol = Service()) {
+        self.delegate = delegate
+        self.service = service
     }
-    
-    func loadPokemonList() {
-        pokemonService.getListPokemonDetails { [weak self] pokemonDetails in
-            self?.pokemons = pokemonDetails
-            self?.filterPokemon = pokemonDetails
-        }
-    }
-    
-    func filterPokemons(with searchText: String) {
-        if searchText.isEmpty {
-            filterPokemon = pokemons
-        } else {
-            let updatePokemonList = pokemons.filter { $0.name.lowercased().contains(searchText.lowercased()) ||
-                String($0.id).contains(searchText) }
-            filterPokemon = updatePokemonList
-        }
-        delegate?.updatePokemonList()
-    }
-    
-    func loadPokemonImage(from url: String, completion: @escaping (UIImage?) -> Void) {
-        guard let imageURL = URL(string: url) else {
-            completion(nil)
-            return
-        }
-        
-        pokemonImageService.fetchImagePokemon(from: imageURL) { result in
+
+    func fetchPokemons() {
+        let group = DispatchGroup()
+
+        var pokemonDetails: [PokemonDetails] = []
+
+        service.getPokemons(route: Pokedex.pokemon, type: Pokemons.self) { [weak self] result in
             switch result {
-            case .success(let image):
-                completion(image)
-            case .failure(let error):
-                print("Failed to download image from URL: \(url). Error: \(error)")
-                completion(nil)
+            case let .success(model):
+                group.enter()
+                self?.fetchPokemonDetails(pokemons: model.results) { (pokemonsDetails) in
+                    group.leave()
+                    pokemonDetails = pokemonsDetails
+                }
+            case let .failure(error):
+                self?.delegate?.showError(error: error)
+            }
+        }
+
+        group.notify(queue: .main) {
+            self.delegate?.didFetchPokemonList(pokemonDetails: pokemonDetails)
+        }
+    }
+
+    func fetchPokemonDetails(pokemons: [Pokemon], completion: @escaping ([PokemonDetails]) -> Void) {
+        var pokemonsDetails: [PokemonDetails] = []
+        let group = DispatchGroup()
+
+        for pokemon in pokemons {
+            let name = pokemon.name
+            group.enter()
+            service.getPokemons(route: Pokedex.pokemonDetails(name: name), type: PokemonDetails.self) { result in
+                defer {
+                    group.leave()
+                }
+                switch result {
+                case let .success(details):
+                    pokemonsDetails.append(details)
+                    self.allPokemons = pokemonsDetails
+                    self.filteredPokemon = pokemonsDetails
+                    self.delegate?.didFetchPokemonList(pokemonDetails: pokemonsDetails)
+
+                case let .failure(error):
+                    self.delegate?.showError(error: error)
+                }
+            }
+        }
+
+        group.notify(queue: .main) {
+            completion(pokemonsDetails)
+        }
+    }
+
+
+    func fetchPokemonColor() {
+        service.getPokemons(route: Pokedex.pokemonColor, type: PokemonColor.self) { result in
+            switch result {
+            case let .success(colorInfo):
+                print("teste\(colorInfo)")
+            case let .failure(error):
+                self.delegate?.showError(error: error)
             }
         }
     }
-}
 
+    func filterPokemon(with searchText: String) {
+        if searchText.isEmpty {
+            filteredPokemon = allPokemons
+        } else {
+            filteredPokemon = allPokemons.filter { pokemon in
+                return pokemon.name.lowercased().contains(searchText.lowercased())
+            }
+        }
+
+        delegate?.didFetchPokemonList(pokemonDetails: pokemon)
+    }
+}
