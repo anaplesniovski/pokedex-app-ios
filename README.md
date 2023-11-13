@@ -2,8 +2,6 @@
 
 Este é um projeto de estudo em andamento que demonstra uma aplicação iOS simples, que utiliza a arquitetura MVVM (Model-View-ViewModel) para exibir informações de diferentes Pokemons. A aplicação carrega dados sobre cada Pokémon, exibe-os em uma lista e permite que os usuários visualizem detalhes de cada um. 
 
-![Sem-Título (2)](https://github.com/anaplesniovski/pokedex-app-ios/assets/93355133/b0b42208-7be0-433c-9472-d13c69b9298a)
-
 ### Como baixar e executar o projeto
 - clonar o projeto:
   
