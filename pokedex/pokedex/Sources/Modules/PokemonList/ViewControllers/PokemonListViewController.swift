@@ -127,9 +127,17 @@ extension PokemonListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "pokemonCell", for: indexPath) as! PokemonListCell
+        
         if let pokemon = pokemonDetails?[indexPath.row] {
-                   cell.configure = pokemon
-               }
+            cell.configure(with: pokemon, image: nil)
+            
+            viewModel.fetchImage(for: pokemon) { [weak cell] image in
+                DispatchQueue.main.async {
+                    cell?.configureImage(image)
+                }
+            }
+        }
+        
         return cell
     }
 }
@@ -142,8 +150,13 @@ extension PokemonListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let selectedPokemon = pokemonDetails?[indexPath.row] {
-            let detailViewController = PokemonDetailViewController()
-            detailViewController.configureUI(with: selectedPokemon)
+            let detailViewController = PokemonDetailsViewController()
+            
+            viewModel.fetchImage(for: selectedPokemon) { [weak detailViewController] image in
+                DispatchQueue.main.async {
+                    detailViewController?.configure(with: selectedPokemon, image: image)
+                }
+            }
             navigationController?.pushViewController(detailViewController, animated: true)
         }
     }

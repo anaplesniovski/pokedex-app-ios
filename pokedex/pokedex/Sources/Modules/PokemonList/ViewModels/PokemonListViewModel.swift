@@ -17,7 +17,7 @@ class PokemonListViewModel {
     private var allPokemons: [PokemonDetails] = []
     var filteredPokemon: [PokemonDetails] = []
 
-    var pokemon: [PokemonDetails] {
+    var pokemonDetails: [PokemonDetails] {
         return filteredPokemon.isEmpty ? allPokemons : filteredPokemon
     }
 
@@ -34,13 +34,13 @@ class PokemonListViewModel {
 
         var pokemonDetails: [PokemonDetails] = []
 
-        service.getPokemons(route: Pokedex.pokemon, type: Pokemons.self) { [weak self] result in
+        service.getPokemons(route: Pokedex.pokemon, type: PokemonList.self) { [weak self] result in
             switch result {
             case let .success(model):
                 group.enter()
                 self?.fetchPokemonDetails(pokemons: model.results) { (pokemonsDetails) in
-                    group.leave()
                     pokemonDetails = pokemonsDetails
+                    group.leave()
                 }
             case let .failure(error):
                 self?.delegate?.showError(error: error)
@@ -66,10 +66,6 @@ class PokemonListViewModel {
                 switch result {
                 case let .success(details):
                     pokemonsDetails.append(details)
-                    self.allPokemons = pokemonsDetails
-                    self.filteredPokemon = pokemonsDetails
-                    self.delegate?.didFetchPokemonList(pokemonDetails: pokemonsDetails)
-
                 case let .failure(error):
                     self.delegate?.showError(error: error)
                 }
@@ -77,22 +73,34 @@ class PokemonListViewModel {
         }
 
         group.notify(queue: .main) {
+            self.allPokemons = pokemonsDetails
+            self.filteredPokemon = pokemonsDetails
+            self.delegate?.didFetchPokemonList(pokemonDetails: pokemonsDetails)
             completion(pokemonsDetails)
         }
     }
-
-
-    func fetchPokemonColor() {
-        service.getPokemons(route: Pokedex.pokemonColor, type: PokemonColor.self) { result in
-            switch result {
-            case let .success(colorInfo):
-                print("teste\(colorInfo)")
-            case let .failure(error):
-                self.delegate?.showError(error: error)
-            }
-        }
-    }
-
+    
+    func fetchImage(for pokemon: PokemonDetails, completion: @escaping (UIImage?) -> Void) {
+           guard let imageURL = URL(string: pokemon.image.imagePositions.frontDefault.imageURLFront) else {
+               completion(nil)
+               return
+           }
+           
+           URLSession.shared.dataTask(with: imageURL) { (data, _, error) in
+               if let data = data {
+                   let image = UIImage(data: data)
+                   DispatchQueue.main.async {
+                       completion(image)
+                   }
+               } else {
+                   if let error = error {
+                       print("Error loading image: \(error)")
+                   }
+                   completion(nil)
+               }
+           }.resume()
+       }
+    
     func filterPokemon(with searchText: String) {
         if searchText.isEmpty {
             filteredPokemon = allPokemons
@@ -102,6 +110,6 @@ class PokemonListViewModel {
             }
         }
 
-        delegate?.didFetchPokemonList(pokemonDetails: pokemon)
+        delegate?.didFetchPokemonList(pokemonDetails: pokemonDetails)
     }
 }

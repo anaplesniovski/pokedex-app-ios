@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Pokemons: Decodable {
+struct PokemonList: Decodable {
     var results: [Pokemon]
 }
 

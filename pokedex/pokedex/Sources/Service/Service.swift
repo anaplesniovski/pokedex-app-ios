@@ -10,7 +10,6 @@ import Foundation
 enum Pokedex {
     case pokemon
     case pokemonDetails(name: String)
-    case pokemonColor
 }
 
 extension Pokedex: Route {
@@ -25,8 +24,6 @@ extension Pokedex: Route {
             return "/pokemon"
         case .pokemonDetails(let name):
             return "/pokemon/\(name)"
-        case .pokemonColor:
-            return "/pokemon-color"
         }
     }
     

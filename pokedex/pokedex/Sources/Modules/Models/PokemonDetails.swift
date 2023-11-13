@@ -15,7 +15,7 @@ struct PokemonDetails: Decodable, Equatable {
     let image: Image
     let types: [TypePokemon]
     let id: Int
-    var species: Species
+    let species: Species
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -73,13 +73,13 @@ struct TypeName: Decodable {
 }
 
 struct Species: Decodable {
-    var colorUrl: String
-
-    enum CodingKeys: String, CodingKey {
-        case colorUrl = "url"
-    }
+    var url: String
 }
 
 struct PokemonColor: Decodable {
+    let color: Color
+}
+
+struct Color: Decodable {
     let name: String
 }

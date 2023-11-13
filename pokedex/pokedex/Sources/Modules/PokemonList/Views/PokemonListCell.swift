@@ -106,33 +106,17 @@ class PokemonListCell: UITableViewCell {
         ])
     }
     
-    var configure: PokemonDetails? {
-        didSet {
-            guard let pokemon = configure else { return }
+    func configure(with pokemon: PokemonDetails, image: UIImage?) {
             nameLabel.text = pokemon.name.capitalized
             typeLabel.text = pokemon.types.map { $0.type.name.capitalized }.joined(separator: " / ")
             idLabel.text = String(pokemon.id)
-            
-            if let color = pokemon.species.colorUrl as String? {
-                let uiColor = UIColor(named: color) ?? .white
-                customView.backgroundColor = uiColor
-            } else {
-                customView.backgroundColor = .white
-            }
-            
-            guard let imageURL = URL(string: pokemon.image.imagePositions.frontDefault.imageURLFront) else { return }
-        
-            URLSession.shared.dataTask(with: imageURL) { (data, response, error) in
-                if let data = data {
-                    DispatchQueue.main.async {
-                        self.pokemonImageView.image = UIImage(data: data)
-                    }
-                } else if let error = error {
-                    print("Erro ao carregar a imagem: \(error)")
-                }
-            }.resume()
+            pokemonImageView.image = image
         }
-    }
+
+    func configureImage(_ image: UIImage?) {
+           pokemonImageView.image = image
+       }
 }
+
 
 
