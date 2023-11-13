@@ -12,6 +12,7 @@ class PokemonListViewController: UIViewController {
     private let constants = PokemonListConstants.PokemonListViewController.self
     lazy var viewModel = PokemonListViewModel(delegate: self)
     var pokemonDetails: [PokemonDetails]?
+    var pokemonListSearchBar: PokemonListSearchBar?
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView(frame: CGRectMake(0, 0, 414, 414))
@@ -49,7 +50,6 @@ class PokemonListViewController: UIViewController {
         searchBar.searchBarStyle = .minimal
         searchBar.isTranslucent = true
         searchBar.layer.cornerRadius = 10
-        searchBar.delegate = self
         return searchBar
     }()
     
@@ -78,6 +78,8 @@ class PokemonListViewController: UIViewController {
         addContransts()
         tableView.register(PokemonListCell.self, forCellReuseIdentifier: "pokemonCell")
         viewModel.fetchPokemons()
+        configureSearchBar()
+        
     }
     
     private func addComponents() {
@@ -116,6 +118,12 @@ class PokemonListViewController: UIViewController {
     func updateView(pokemon: [PokemonDetails]) {
         self.pokemonDetails = pokemon
         self.tableView.reloadData()
+    }
+    
+    func configureSearchBar() {
+        pokemonListSearchBar = PokemonListSearchBar()
+        pokemonListSearchBar?.delegate = self
+        pokemonListSearchBar?.setupSearchBar(searchBar)
     }
 }
 
@@ -175,12 +183,10 @@ extension PokemonListViewController: PokemonDetailsDelegate {
     }
 }
 
-extension PokemonListViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+extension PokemonListViewController: SearchBarDelegate {
+    func didChangeSearchBar(_ searchText: String) {
         viewModel.filterPokemon(with: searchText)
     }
     
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-    }
+    
 }

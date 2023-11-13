@@ -17,15 +17,15 @@ class PokemonDetailsViewModel {
     var haveMoreOneType: Bool {
         return pokemonDetails.types.count > 1
     }
-    
+
     var name: String {
         return pokemonDetails.name.capitalized
     }
-    
+
     var types: String {
         return pokemonDetails.types.map { $0.type.name.capitalized }.joined(separator: " / ")
     }
-    
+
     var id: String {
         return String(pokemonDetails.id)
     }

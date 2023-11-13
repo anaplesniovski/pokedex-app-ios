@@ -20,6 +20,7 @@ class PokemonListCell: UITableViewCell {
         view.layer.shadowOpacity = 0.5
         view.layer.shadowOffset = CGSize(width: 0, height: 2)
         view.layer.shadowRadius = 4
+        view.backgroundColor = .gray
         return view
     }()
     
