@@ -11,7 +11,7 @@ struct PokemonListConstants {
     
     struct PokemonListViewController {
         
-        struct PokeballImageView {
+        struct ImageView {
             static let top: CGFloat = 2
             static let leading: CGFloat = 2
             static let trailing: CGFloat = 2
@@ -23,21 +23,20 @@ struct PokemonListConstants {
             static let trailing: CGFloat = -40
         }
         
-        struct DescriptionSearchLabel {
+        struct TextLabel {
             static let top: CGFloat = 12
             static let leading: CGFloat = 40
             static let trailing: CGFloat = -40
         }
         
-        struct SearchTextField {
+        struct SearchBar {
             static let top: CGFloat = 18
-            static let leading: CGFloat = 40
-            static let trailing: CGFloat = -40
-            static let height: CGFloat = 40
+            static let leading: CGFloat = 14
+            static let trailing: CGFloat = -14
         }
         
-        struct PokemonTableView {
-            static let top: CGFloat = 50
+        struct TableView {
+            static let top: CGFloat = 20
         }
     }
 }

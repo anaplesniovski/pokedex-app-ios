@@ -11,6 +11,13 @@ struct PokemonListCellConstants {
     
     struct PokemonListCell {
         
+        struct CustomView {
+            static let top: CGFloat = 10
+            static let leading: CGFloat = 24
+            static let trailing: CGFloat = -24
+            static let bottom: CGFloat = -10
+        }
+        
         struct StackView {
             static let height: CGFloat = 130
         }
@@ -38,9 +45,10 @@ struct PokemonListCellConstants {
         }
         
         struct PokemonImageView {
-            static let trailing: CGFloat = -25
-            static let height: CGFloat = 130
-            static let width: CGFloat = 130
+            static let top: CGFloat = -10
+            static let trailing: CGFloat = -10
+            static let width: CGFloat = 110
+            static let height: CGFloat = 140
         }
     }
 }
